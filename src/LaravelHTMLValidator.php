@@ -45,7 +45,6 @@ class LaravelHTMLValidator extends Command
     {
 
         $args = array(
-            //'doc'   => $html,
             'fragment'  => $html,
             'out'       => 'json'
         );
