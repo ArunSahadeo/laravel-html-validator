@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\App;
 use GuzzleHttp\Client;
 
 class LaravelHTMLValidator extends Command
@@ -15,7 +17,9 @@ class LaravelHTMLValidator extends Command
      *
      * @var string
      */
-    protected $signature = 'html:validate';
+    protected $signature = 'html:validate
+                            {--email=*}
+                            ';
 
     /**
      * The console command description.
@@ -40,6 +44,18 @@ class LaravelHTMLValidator extends Command
 
     protected $viewFiles = array();
     protected $validatorURI = 'https://validator.nu';
+    protected $userEmail;
+
+    protected function sendMail($email, $data)
+    {
+        Mail::send([], [], function ($message) use ($email, $data)
+        {
+            $message->from(env('ADMIN_EMAIL'));
+            $message->to($email);
+            $message->subject('HTML Validation results');
+            $message->setBody($data, 'text/html');
+        });
+    }
 
     protected function validateHTML($html, $view)
     {
@@ -63,11 +79,28 @@ class LaravelHTMLValidator extends Command
                ]);
 
         $validatorMessages = json_decode($res->getBody());
+        $emailData = [];
 
         foreach ($validatorMessages->messages as $validatorMessage)
         {
             if(empty($validatorMessage->message) || empty($validatorMessage->lastLine)) continue;
-            echo "Found on line " . $validatorMessage->lastLine . " for view " . $view . ": " . $validatorMessage->message . "\n";
+            
+            $customValidationMessage = "Found on line " . $validatorMessage->lastLine . " for view " . $view . ": " . $validatorMessage->message . "\n";
+
+            if (strtolower(App::environment()) == "production" && strlen($this->userEmail) > 0)
+            {
+                array_push($emailData, $customValidationMessage);
+                continue;
+            }
+            
+            echo $customValidationMessage;
+        }
+
+        $emailData = implode("\n", $emailData);
+
+        if (strlen($emailData) > 0 && strlen($this->userEmail) > 0)
+        {
+            $this->sendMail($this->userEmail, $emailData);
         }
 
     }
@@ -120,6 +153,29 @@ class LaravelHTMLValidator extends Command
      */
     public function handle()
     {
+        $emailAll = $this->option('email');
+        $comma = ",";
+
+        if ( strpos($emailAll[0], $comma) !== false)
+        {
+            $arrayNew = explode($comma, $emailAll[0]);
+            $emailAll = [];
+            foreach ($arrayNew as $arrayEmail)
+            {
+                array_push($emailAll, $arrayEmail);
+            }
+        } 
+
+        if (count($emailAll) > 1)
+        {
+            $emailAll = implode(",", $emailAll);
+            $this->userEmail = $emailAll;
+        }
+        elseif (count($emailAll) == 1)
+        {
+            $this->userEmail = $emailAll[0];
+        }
+
         $viewNames = $this->getViews();
         foreach ($viewNames as $viewName)
         {
