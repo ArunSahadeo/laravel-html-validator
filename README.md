@@ -1,15 +1,26 @@
-Composer Library Template
-=========================
+## Install
 
-If you are trying to create a new PHP Composer library, whether it will be going to submitted to packagist.org or just in your Github account, this template of files will surely help you make the process a lot easier and faster.
+You can install the package via Composer:
+```bash
+composer require aruns/laravel-html-validator 
+```
 
-Features
---------
+Next, you must install the service provider:
 
-* PSR-4 autoloading compliant structure
-* Unit-Testing with PHPUnit
-* Comprehensive Guides and tutorial
-* Easy to use to any framework or even a plain php file
+```php
+// config/app.php
+'providers' => [
+    ...
+    Aruns\LaravelHTMLValidator\LaravelHTMLValidator::class,
+];
+```
 
+You must register the `\Aruns\LaravelHTMLValidator\LaravelHTMLValidator`:
 
-I encourage that you put more information on this readme file instead of leaving it as is. See [http://www.darwinbiler.com/designing-and-making-the-readme-file-for-your-github-repository/](How to make a README file) for more info.
+```php
+// app/Console/Kernel.php
+protected $commands = [
+    ...
+    \Aruns\LaravelHTMLValidator\LaravelHTMLValidator::class,
+];
+```

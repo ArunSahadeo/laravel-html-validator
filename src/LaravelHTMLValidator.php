@@ -3,11 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\{App, Config, Mail, Route, View};
 use GuzzleHttp\Client;
 
 class LaravelHTMLValidator extends Command

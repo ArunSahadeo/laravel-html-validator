@@ -1,15 +1,15 @@
 {
-    "name": "buonzz/composer-library-template",
-    "description": "Boilerplate package for creating other packages.",
-    "keywords": ["template", "composer", "package"],
-    "license": "DBAD",
+    "name": "aruns/laravel-html-validator",
+    "description": "Provides a Laravel artisan command for validating your Laravel install's HTML views.",
+    "keywords": ["laravel", "composer", "artisan"],
+    "license": "GPLv3+",
     "authors": [
         {
-            "name": "Darwin Biler",
-            "email": "buonzz@gmail.com"
+            "name": "Arun James Sahadeo",
+            "email": "arunjamessahadeo@gmail.com"
         }
     ],
-    "type": "project",
+    "type": "laravel-plugin",
     "require": {
 		"php": ">=5.4"
     },
@@ -18,7 +18,14 @@
     },
 	"autoload": {
         "psr-4": {
-            "Buonzz\\Template\\": "src/"
+            "Aruns\\LaravelHTMLValidator\\": "src/"
         }
-    }
+    },
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Aruns\\LaravelHTMLValidator\\HTMLValidator"
+			]
+		}
+	}
 }
